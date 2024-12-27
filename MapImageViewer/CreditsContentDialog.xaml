@@ -1,0 +1,33 @@
+﻿<ContentDialog
+    x:Class="MapImageViewer.CreditsContentDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MapImageViewer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Credits"
+    CloseButtonText="Close">
+
+    <StackPanel>
+        <StackPanel Margin="0,0,0,10">
+            <TextBlock Text="Program:" FontWeight="SemiBold" />
+            <TextBlock Text="By: Matthew Gooch" />
+            <TextBlock Text="Copyright: © MGOOCH 2021" />
+        </StackPanel>
+        <StackPanel Margin="0,0,0,10">
+            <TextBlock Text="Icon:" FontWeight="SemiBold" />
+            <TextBlock Text="By: Matthew R. Miller, US" />
+            <TextBlock>At: <Hyperlink NavigateUri="https://thenounproject.com/term/treasure-map/59462/">https://thenounproject.com/term/treasure-map/59462/</Hyperlink></TextBlock>
+            <TextBlock>License: <Hyperlink NavigateUri="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</Hyperlink></TextBlock>
+        </StackPanel>
+        <!--<StackPanel Margin="0,0,0,10">
+            <TextBlock Text="Map image:" FontWeight="SemiBold" />
+            <TextBox x:Name="tboxImageSource" IsReadOnly="True" Header="Source:" />
+        </StackPanel>
+        <StackPanel Margin="0,0,0,10">
+            <TextBlock Text="Ink:" FontWeight="SemiBold" />
+            <TextBox x:Name="tboxInkSource" IsReadOnly="True" Header="Source:" />
+        </StackPanel>-->
+    </StackPanel>
+</ContentDialog>

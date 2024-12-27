@@ -1,0 +1,239 @@
+﻿<Page
+    x:Class="MapImageViewer.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MapImageViewer"
+    xmlns:converters="using:MapImageViewer.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Loaded="Page_Loaded">
+
+    <UserControl.Resources>
+        <converters:InkCanvasToNewHeightWidth x:Key="toOuterContentHeightWidth" />
+        <converters:InkCanvasToNewPosition x:Key="toNewPosition" />
+
+        <local:CustomHighlighterPen x:Key="CustomHighlighterPen" />
+        <BrushCollection x:Key="CustomPenPalette">
+            <SolidColorBrush Color="Black" />
+            <SolidColorBrush Color="LightGray" />
+            <SolidColorBrush Color="#A2421E" />
+            <SolidColorBrush Color="#80dfff" />
+            <SolidColorBrush Color="#88E1E9" />
+            <SolidColorBrush Color="#FFD79D" />
+            <SolidColorBrush Color="#FFB850" />
+            <SolidColorBrush Color="Yellow" />
+            <SolidColorBrush Color="#33cc33" />
+            <SolidColorBrush Color="#9AA628" />
+            <SolidColorBrush Color="#cc33ff" />
+        </BrushCollection>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition  Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <CommandBar 
+            Grid.Row="0"
+            Canvas.ZIndex="1"
+            DefaultLabelPosition="Right"
+            IsDynamicOverflowEnabled="False"
+            OverflowButtonVisibility="Collapsed"
+            HorizontalContentAlignment="Left">
+            <AppBarButton x:Name="Open"
+                          Label="Open"
+                          Icon="OpenFile"
+                          Click="OpenFiles_Click" />
+            <AppBarButton Label="Reset"
+                          Icon="Refresh">
+                <AppBarButton.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem x:Name="ResetAll"
+                                        Text="Reset all"
+                                        Icon="Refresh"
+                                        Click="ResetAll_Click" />
+                        <MenuFlyoutItem x:Name="ResetPosition"
+                                        Text="Reset position"
+                                        Icon="Pictures"
+                                        Click="ResetPosition_Click" />
+                        <MenuFlyoutItem x:Name="ResetScale"
+                                        Text="Reset scale"
+                                        Icon="StopSlideShow"
+                                        Click="ResetScale_Click" />
+                        <MenuFlyoutItem x:Name="ResetRotation"
+                                        Text="Reset rotation"
+                                        Icon="Rotate"
+                                        Click="ResetRotation_Click"/>
+                    </MenuFlyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton Label="Toggle"
+                          Icon="Switch">
+                <AppBarButton.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem x:Name="MapVisibility"
+                                        Text="Hide map"
+                                        Click="MapVisibility_Click"/>
+                        <MenuFlyoutItem x:Name="CanvasColour"
+                                        Text="Set black background"
+                                        Click="CanvasColour_Click"/>
+                        <MenuFlyoutItem x:Name="MouseCursor"
+                                        Text="Set cursor as cross"
+                                        Click="MouseCursor_Click"/>
+                    </MenuFlyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton x:Name="btnSave"
+                          Icon="Save"
+                          Width="44"
+                          LabelPosition="Collapsed"
+                          ToolTipService.ToolTip="Save"
+                          Click="btnSave_Click" />
+            <AppBarButton x:Name="btnExportImage"
+                          Icon="Share"
+                          ToolTipService.ToolTip="Export inage file (png, jpg, ...)"
+                          Width="44"
+                          Click="btnExportImage_Click" />
+            <AppBarButton x:Name="FullScreen"
+                          Icon="FullScreen"
+                          ToolTipService.ToolTip="Toggle full screen"
+                          Width="44"
+                          LabelPosition="Collapsed"
+                          Click="FullScreen_Click"/>
+            <AppBarButton x:Name="Help"
+                          Icon="Help"
+                          Width="44"
+                          ToolTipService.ToolTip="Help"
+                          LabelPosition="Collapsed"
+                          Click="Help_Click" />
+            <AppBarButton x:Name="Credits"
+                          ToolTipService.ToolTip="Credits"
+                          Width="44"
+                          LabelPosition="Collapsed"
+                          Click="Credits_Click">
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71B;" />
+            </AppBarButton>
+        </CommandBar>
+
+        <StackPanel Grid.Row="1"
+                    Canvas.ZIndex="2"
+                    Background="White"
+                    HorizontalAlignment="Stretch"
+                    Padding="0,0,12,0"
+                    BorderBrush="LightGray"
+                    BorderThickness="0,0,0,1">
+            <CommandBar IsOpen="False"
+                        DefaultLabelPosition="Collapsed"
+                        OverflowButtonVisibility="Collapsed"
+                        HorizontalAlignment="Right"
+                        Background="White">
+                <CommandBar.Content>
+                    <InkToolbar x:Name="inkToolbar"
+                            VerticalAlignment="Top"
+                            TargetInkCanvas="{x:Bind inkCanvas}"
+                            InitialControls="None"
+                            ActiveTool="{x:Bind movementButton}"
+                            ActiveToolChanged="inkToolbar_ActiveToolChanged"
+                            InkDrawingAttributesChanged="inkToolbar_InkDrawingAttributesChanged">
+                        <InkToolbarBallpointPenButton x:Name="pen"
+                                                      MinStrokeWidth="1"
+                                                      MaxStrokeWidth="50"
+                                                      SelectedStrokeWidth="5"
+                                                      ToolTipService.ToolTip="Pen" />
+                        <InkToolbarHighlighterButton x:Name="highlighterPen"
+                                                     MinStrokeWidth="5"
+                                                     MaxStrokeWidth="100"
+                                                     SelectedStrokeWidth="30"
+                                                     SelectedBrushIndex="0"
+                                                     ToolTipService.ToolTip="Highlighter pen" >
+                        </InkToolbarHighlighterButton>
+                        <!--<InkToolbarCustomPenButton x:Name="testPen"
+                                                   Click="testPen_Click"/>-->
+
+                        <!-- Palette="{StaticResource CustomPenPalette}"-->
+                        <InkToolbarEraserButton />
+    
+                                                    
+                        <InkToolbarCustomToggleButton x:Name="toShapesToggle"
+                                                      Click="toShapesToggle_Click"
+                                                      ToolTipService.ToolTip="Ink to line">
+                            <SymbolIcon Symbol="Italic"
+                                        RenderTransformOrigin="0.5,0.5">
+                                <SymbolIcon.RenderTransform>
+                                    <CompositeTransform ScaleX="0.9" ScaleY="0.9"/>
+                                </SymbolIcon.RenderTransform>
+                            </SymbolIcon>
+                        </InkToolbarCustomToggleButton>
+                        <InkToolbarCustomToolButton x:Name="movementButton">
+                            <SymbolIcon Symbol="TouchPointer"
+                                        RenderTransformOrigin="0.5,0.5">
+                                <SymbolIcon.RenderTransform>
+                                    <CompositeTransform ScaleX="0.9" ScaleY="0.9"/>
+                                </SymbolIcon.RenderTransform>
+                            </SymbolIcon>
+                        </InkToolbarCustomToolButton>
+
+                    </InkToolbar>
+                </CommandBar.Content>
+                <AppBarSeparator />
+                <AppBarButton Name="undoButton"
+                          Icon="Undo"
+                          MaxWidth="44"
+                          Click="undoButton_Click"
+                          ToolTipService.ToolTip="Undo" />
+                <AppBarButton Name="redoButton"
+                          Icon="Redo"
+                          MaxWidth="44"
+                          Click="redoButton_Click"
+                          ToolTipService.ToolTip="Redo" />
+                <AppBarSeparator />
+                <AppBarButton Name="reSetColourPickerButton"
+                          Icon="Refresh"
+                          MaxWidth="44"
+                          Click="reSetColourPickerButton_Click"
+                          ToolTipService.ToolTip="Reset colours" />
+                <AppBarElementContainer VerticalAlignment="Center">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Threshold" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="0"/>
+                        <TextBox Name="colourPickerThreshold" PlaceholderText="15" InputScope="Number" VerticalAlignment="Center" Grid.Column="1"/>
+                    </Grid>
+
+                </AppBarElementContainer>
+            </CommandBar>
+        </StackPanel>
+
+
+        <Grid x:Name="grid"
+              Grid.Row="2"
+              Background="White">
+            <Canvas x:Name="mainCanvas"
+                    ManipulationDelta="Image_ManipulationDelta"
+                    ManipulationMode="Rotate,Scale,TranslateX,TranslateY"
+                    PointerWheelChanged="MapImage_PointerWheelChanged"
+                    PointerPressed="mainCanvas_PointerPressed"
+                    Background="#00FFFFFF"
+                    Margin="3,0,-3,0">
+                <Image x:Name="MapImage" Stretch="None" />
+                <Grid BorderBrush="Black"
+                      BorderThickness="1" HorizontalAlignment="Left" Canvas.Left="4" VerticalAlignment="Center">
+                    <InkCanvas x:Name="inkCanvas"
+                               Height="{Binding Height, ElementName=MapImage, Converter={StaticResource toOuterContentHeightWidth}}"
+                               Width="{Binding Width, ElementName=MapImage, Converter={StaticResource toOuterContentHeightWidth}}" />
+                    <Grid.RenderTransform>
+                        <TranslateTransform X="{Binding Width, Converter={StaticResource toNewPosition}, ElementName=MapImage}"
+                                            Y="{Binding Height, Converter={StaticResource toNewPosition}, ElementName=MapImage}" />
+                    </Grid.RenderTransform>
+                </Grid>
+                <Canvas.RenderTransform>
+                    <CompositeTransform x:Name="deltaTransform" />
+                </Canvas.RenderTransform>
+            </Canvas>
+        </Grid>
+    </Grid>
+</Page>
