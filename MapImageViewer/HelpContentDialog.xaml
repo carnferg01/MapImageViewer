@@ -22,5 +22,11 @@
             <TextBlock Text="Pinch (Two finger) = Zoom" />
             <TextBlock Text="Rotate (Two finger) = Rotate" />
         </StackPanel>
+        <StackPanel Margin="0,0,0,10">
+            <TextBlock Text="Colour picking/filtering" FontWeight="SemiBold" />
+            <TextBlock Text="Shift + click = Pickout all similar colours (according to the threshold value)" />
+            <TextBlock Text="Reset button (next to threshold field) = To  return to full colour image" />
+            <TextBlock Text="Higher threshold value = More colours shown" />
+        </StackPanel>
     </StackPanel>
 </ContentDialog>
