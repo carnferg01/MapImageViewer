@@ -14,4 +14,4 @@ Current plan is for it to be rewritten in the form of a website. However finding
 
 #
 
-![Image showing the program](relative/path/to/image.png)
+![Image showing the program](MapImageViewer_screenshot.jpg)
